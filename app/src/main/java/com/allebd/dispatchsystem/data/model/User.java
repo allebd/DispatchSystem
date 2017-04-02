@@ -1,44 +1,47 @@
-package com.allebd.dispatchsystem.models;
+package com.allebd.dispatchsystem.data.model;
 
-/**
- * Created by CSISPC on 10/03/2017.
- */
 
-public class Users {;
-    private String username;
-    private String password;
+public class User {
+    private String uid;
+    private String name;
     private String telephone;
     private String dob;
     private String gender;
     private String bloodGroup;
 
-    public Users(String username, String password, String telephone, String dob, String gender, String bloodGroup) {
-        this.username = username;
-        this.password = password;
+    public User(String name, String telephone, String dob, String gender, String bloodGroup) {
+        this.name = name;
         this.telephone = telephone;
         this.dob = dob;
         this.gender = gender;
         this.bloodGroup = bloodGroup;
     }
 
-    public Users(){
+    public User(){
 
     }
 
-    public String getUsername() {
-        return username;
+    public void initEmptyUser(){
+        name = "";
+        telephone = "";
+        dob = "";
+        gender = "";
+        bloodGroup = "";
+    }
+    public String getUid() {
+        return uid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTelephone() {

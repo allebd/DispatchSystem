@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:contentPadding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/hospitalName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_local_hospital_black_24dp"
+                android:padding="4dp"
+                android:text="St. Martins Hospital"
+                android:textSize="22sp"/>
+
+            <ImageButton
+                android:id="@+id/close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_clear_black_24dp"
+                android:tint="@color/colorAccent"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/hospitalAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_place_black_24dp"
+            android:gravity="center_vertical"
+            android:padding="4dp"
+            android:text="#24 Stadium Road, Rumuokwurushi PortHarcourt"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/hospitalNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_call_black_24dp"
+            android:gravity="center_vertical"
+            android:padding="4dp"
+            android:text="08092049313"
+            android:textSize="14sp"/>
+
+        <Button
+            android:id="@+id/getHelp"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Get Help"/>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

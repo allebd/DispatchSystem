@@ -1,5 +1,6 @@
-package com.allebd.dispatchsystem;
+package com.allebd.dispatchsystem.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,24 +12,17 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.allebd.dispatchsystem.models.Users;
+import com.allebd.dispatchsystem.R;
+import com.allebd.dispatchsystem.data.DataManager;
+import com.allebd.dispatchsystem.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import static com.allebd.dispatchsystem.R.id.reg_bloodgroup;
-import static com.allebd.dispatchsystem.R.id.reg_dob;
-import static com.allebd.dispatchsystem.R.id.reg_gender;
-import static com.allebd.dispatchsystem.R.id.reg_password;
-import static com.allebd.dispatchsystem.R.id.reg_phone;
-import static com.allebd.dispatchsystem.R.id.reg_user;
+import javax.inject.Inject;
 
 //import android.databinding.DataBindingUtil;
 //import com.allebd.dispatchsystem.databinding.ActivityRegisterBinding;
@@ -39,11 +33,13 @@ import static com.allebd.dispatchsystem.R.id.reg_user;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener, OnCompleteListener<AuthResult> {
 
+    @Inject
+    public DataManager.Operations dataManager;
+    Context c;
     //private ActivityRegisterBinding binding;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference  mDatabase;
-    //private String etreg_use, etreg_pas, etreg_bloodGrou, etreg_do, etreg_phon, etreg_gende, id;
     private EditText etreg_user;
+    private EditText etreg_email;
     private EditText etreg_pass;
     private EditText etreg_phone;
     private EditText etreg_gender;
@@ -51,44 +47,38 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private EditText etreg_bloodGroup;
     private TextView tvUserLogin;
     private Button btnRegister;
-    private ProgressBar mprogress;
+    private ProgressDialog progressDialog;
     private FirebaseAuth.AuthStateListener authListener;
-    Context c;
+    private String etRegEmail, etRegPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        etreg_user = (EditText) findViewById(reg_user);
-        etreg_pass = (EditText) findViewById(reg_password);
-        etreg_phone = (EditText) findViewById(reg_phone);
-        etreg_gender = (EditText) findViewById(reg_gender);
-        etreg_dob = (EditText) findViewById(reg_dob);
-        etreg_bloodGroup = (EditText) findViewById(reg_bloodgroup);
+        etreg_user = (EditText) findViewById(R.id.reg_user);
+        etreg_email = (EditText) findViewById(R.id.reg_email);
+        etreg_pass = (EditText) findViewById(R.id.reg_password);
+        etreg_phone = (EditText) findViewById(R.id.reg_phone);
+        etreg_gender = (EditText) findViewById(R.id.reg_gender);
+        etreg_dob = (EditText) findViewById(R.id.reg_dob);
+        etreg_bloodGroup = (EditText) findViewById(R.id.reg_bloodgroup);
         tvUserLogin = (TextView) findViewById(R.id.tvUserLogin);
         btnRegister = (Button) findViewById(R.id.btn_register);
-        mprogress = (ProgressBar) findViewById(R.id.progressBar);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         btnRegister.setOnClickListener(this);
         tvUserLogin.setOnClickListener(this);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Please wait");
     }
 
-    private void switchActivity(Class classFile, boolean addExtras) {
+    private void switchActivity(Class classFile) {
         Intent intent = new Intent(this, classFile);
-        if (addExtras) {
-            intent.putExtra("username", reg_user);
-            intent.putExtra("password", reg_password);
-            intent.putExtra("phone", reg_phone);
-            intent.putExtra("gender", reg_gender);
-            intent.putExtra("dob", reg_dob);
-            intent.putExtra("bloodGroup", reg_bloodgroup);
-            //intent.putExtra("id", id);
-        }
+
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
@@ -97,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tvUserLogin:
-                switchActivity(LoginActivity.class, false);
+                switchActivity(LoginActivity.class);
                 break;
             case R.id.btn_register:
                 signup();
@@ -106,24 +96,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void signup() {
-        String etreguser = etreg_user.getText().toString().trim();
-        String etregpass = etreg_pass.getText().toString().trim();
-        String etregdob = etreg_dob.getText().toString().trim();
-        String etregbg = etreg_bloodGroup.getText().toString().trim();
-        String etregphone = etreg_phone.getText().toString().trim();
-        String etreggender = etreg_gender.getText().toString().trim();
+        String etRegUser = etreg_user.getText().toString().trim();
+        String etRegEmail = etreg_email.getText().toString().trim();
+        String etRegPass = etreg_pass.getText().toString().trim();
+        String etRegDob = etreg_dob.getText().toString().trim();
+        String etRegBg = etreg_bloodGroup.getText().toString().trim();
+        String etRegPhone = etreg_phone.getText().toString().trim();
+        String etRegGender = etreg_gender.getText().toString().trim();
 
-        if (!validateEmail(etreguser) || !validatePassword(etregpass) || validateDob(etregdob)
-                || validateBg(etregbg) || validatePhone(etregphone) || validateGender(etreggender)) return;
-        mprogress.setVisibility(View.VISIBLE);
+        if (!validateEmail(etRegEmail) || !validateName(etRegUser) || !validatePassword(etRegPass) || !validateDob(etRegDob)
+                || !validateBg(etRegBg) || !validatePhone(etRegPhone) || !validateGender(etRegGender))
+            return;
+        showProgressDialog("Registering you!");
         btnRegister.setEnabled(false);
-//        this.etreg_use = etreguser;
-//        this.etreg_pas = etregpass;
-//        this.etreg_do = etregdob;
-//        this.etreg_bloodGrou = etregbg;
-//        this.etreg_phon = etregphone;
-//        this.etreg_gende = etreggender;
-        firebaseAuth.createUserWithEmailAndPassword(etreguser, etregpass).addOnCompleteListener(this, this);
+        firebaseAuth.createUserWithEmailAndPassword(etRegUser, etRegPass).addOnCompleteListener(this, this);
     }
 
     private boolean validateDob(String dob) {
@@ -132,8 +118,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Snackbar.make(findViewById(R.id.activity_sign_up), "Enter Date of Birth!", Snackbar.LENGTH_SHORT).show();
             etreg_dob.setError("Enter Date of Birth!");
             state = false;
-
         } else etreg_dob.setError(null);
+        return state;
+    }
+
+    private boolean validateName(String name) {
+        boolean state = true;
+        if (TextUtils.isEmpty(name)) {
+            Snackbar.make(findViewById(R.id.activity_sign_up), "Enter Name!", Snackbar.LENGTH_SHORT).show();
+            etreg_user.setError("Enter Name!");
+            state = false;
+        } else etreg_user.setError(null);
         return state;
     }
 
@@ -170,21 +165,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         return state;
     }
 
-
     private boolean validateEmail(String email) {
         boolean state = true;
         if (TextUtils.isEmpty(email)) {
             Snackbar.make(findViewById(R.id.activity_sign_up), "Enter email address!", Snackbar.LENGTH_SHORT).show();
-            etreg_user.setError("Enter email address!");
+            etreg_email.setError("Enter email address!");
             state = false;
 
-        } else etreg_user.setError(null);
+        } else etreg_email.setError(null);
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Snackbar.make(findViewById(R.id.activity_sign_up), "Enter a valid email address!", Snackbar.LENGTH_SHORT).show();
-            etreg_user.setError("Enter a valid email address!");
+            etreg_email.setError("Enter a valid email address!");
             state = false;
-        } else etreg_user.setError(null);
+        } else etreg_email.setError(null);
         return state;
     }
 
@@ -206,34 +200,46 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onComplete(@NonNull Task<AuthResult> task) {
-        mprogress.setVisibility(View.GONE);
+        dismissProgressDialog();
         if (!task.isSuccessful()) {
             Snackbar.make(findViewById(R.id.activity_sign_up), "Sign Up failed, try again", Snackbar.LENGTH_SHORT).show();
             btnRegister.setEnabled(true);
         } else {
-            //THIS IS FOR STORING AUTHENTICATED USER'S DATA
-            authListener = new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    String etreguser = etreg_user.getText().toString().trim();
-                    String etregpass = etreg_pass.getText().toString().trim();
-                    String etregdob = etreg_dob.getText().toString().trim();
-                    String etregbg = etreg_bloodGroup.getText().toString().trim();
-                    String etregphone = etreg_phone.getText().toString().trim();
-                    String etreggender = etreg_gender.getText().toString().trim();
 
-                    Users users = new Users(etreguser, etregpass, etregphone, etregdob, etreggender, etregbg);
+            signUserIn();
 
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (user != null) {
-                        mDatabase.child("users").child(user.getUid()).setValue(users);
-                    }
-                }
-            };
-
-            switchActivity(LoginActivity.class, true);
         }
-
     }
 
+    private void signUserIn() {
+        firebaseAuth.signInWithEmailAndPassword(etRegEmail, etRegPass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    String uid = task.getResult().getUser().getUid();
+                    dataManager.storeUserInfo(createUser(), uid);
+                    switchActivity(MainActivity.class);
+                }
+            }
+        });
+    }
+
+    private User createUser() {
+        User user = new User();
+        user.setName(etreg_user.getText().toString());
+        user.setDob(etreg_dob.getText().toString());
+        user.setGender(etreg_gender.getText().toString());
+        user.setTelephone(etreg_phone.getText().toString());
+        user.setBloodGroup(etreg_bloodGroup.getText().toString());
+        return user;
+    }
+
+    private void showProgressDialog(String message) {
+        progressDialog.setMessage(message);
+        progressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        progressDialog.dismiss();
+    }
 }

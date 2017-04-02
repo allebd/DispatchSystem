@@ -31,6 +31,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
+
             <!--  Username Label -->
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -42,7 +43,21 @@
                     android:id="@+id/reg_user"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Username"
+                    android:hint="Name"
+                    android:inputType="text" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp">
+
+                <EditText
+                    android:id="@+id/reg_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
                     android:inputType="textEmailAddress" />
             </android.support.design.widget.TextInputLayout>
 
@@ -73,7 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tel."
-                    android:inputType="text" />
+                    android:inputType="phone" />
             </android.support.design.widget.TextInputLayout>
 
             <!--  Date of Birth Label -->

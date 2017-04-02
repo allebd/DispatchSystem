@@ -1,4 +1,4 @@
-package com.allebd.dispatchsystem;
+package com.allebd.dispatchsystem.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.allebd.dispatchsystem.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,15 +25,13 @@ import com.google.firebase.auth.FirebaseUser;
 //import com.allebd.dispatchsystem.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, OnCompleteListener<AuthResult> {
-//    DatabaseHelper myDb;
     Context c;
-    private EditText etUsername;
-    private EditText etPassword;
+    private EditText usernameET;
+    private EditText passwordET;
     private TextView tvRegister;
     private Button btnLogin;
-    private ProgressBar mprogress;
-//    private ActivityLoginBinding binding;
-    private FirebaseAuth firebaseAuth;
+    private ProgressBar progressBar;
+    private FirebaseAuth auth;
     private String id = null;
 
     @Override
@@ -40,28 +39,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        firebaseAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             switchActivity(MainActivity.class);
         }
 
-        etUsername = (EditText) findViewById(R.id.input_user);
-        etPassword = (EditText) findViewById(R.id.input_password);
+        usernameET = (EditText) findViewById(R.id.input_user);
+        passwordET = (EditText) findViewById(R.id.input_password);
         tvRegister = (TextView) findViewById(R.id.tvRegister);
         btnLogin = (Button) findViewById(R.id.btn_Login);
-        mprogress = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        //setContentView(this, R.layout.activity_login);
         if (getIntent()!=null){
             Intent intent = getIntent();
             String email = intent.getStringExtra("input_user");
             String password = intent.getStringExtra("input_password");
             id = intent.getStringExtra("id");
 
-            etUsername.setText(email);
-            etPassword.setText(password);
+            usernameET.setText(email);
+            passwordET.setText(password);
         }
 
         btnLogin.setOnClickListener(this);
@@ -81,12 +79,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
-        String emailText = etUsername.getText().toString().trim();
-        String passwordText = etPassword.getText().toString().trim();
+        String emailText = usernameET.getText().toString().trim();
+        String passwordText = passwordET.getText().toString().trim();
         if (!validate(emailText, passwordText)) return;
-        mprogress.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         btnLogin.setEnabled(false);
-        //auth.signInWithEmailAndPassword(emailText, passwordText).addOnCompleteListener(this, this);
+        auth.signInWithEmailAndPassword(emailText, passwordText).addOnCompleteListener(this, this);
     }
 
     private boolean validate(String email, String password) {
@@ -95,30 +93,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (TextUtils.isEmpty(email)) {
             Snackbar.make(findViewById(R.id.activity_login), "Enter email address!", Snackbar.LENGTH_SHORT).show();
-            etUsername.setError("Enter email address");
+            usernameET.setError("Enter email address");
             state = false;
-        } else etUsername.setError(null);
+        } else usernameET.setError(null);
 
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Snackbar.make(findViewById(R.id.activity_login), "Enter a valid email address!", Snackbar.LENGTH_SHORT).show();
-            etUsername.setError("Enter a valid email address!");
+            usernameET.setError("Enter a valid email address!");
             state = false;
-        } else etUsername.setError(null);
+        } else usernameET.setError(null);
 
 
         if (TextUtils.isEmpty(password)) {
             Snackbar.make(findViewById(R.id.activity_login), "Enter password", Snackbar.LENGTH_SHORT).show();
-            etPassword.setError("Enter password");
+            passwordET.setError("Enter password");
             state = false;
-        } else etPassword.setError(null);
+        } else passwordET.setError(null);
 
 
         if (password.length() < 5) {
             Snackbar.make(findViewById(R.id.activity_login), R.string.pass_short, Snackbar.LENGTH_SHORT).show();
-            etPassword.setError("Password too short");
+            passwordET.setError("Password too short");
             state = false;
-        } else etPassword.setError(null);
+        } else passwordET.setError(null);
 
         return state;
     }
@@ -126,7 +124,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onComplete(@NonNull Task<AuthResult> task) {
 
-        mprogress.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
         if (!task.isSuccessful()) {
             Snackbar.make(findViewById(R.id.activity_login), R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
             btnLogin.setEnabled(true);

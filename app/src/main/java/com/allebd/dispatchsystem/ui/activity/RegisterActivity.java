@@ -242,4 +242,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void dismissProgressDialog() {
         progressDialog.dismiss();
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

@@ -13,6 +13,7 @@ import com.allebd.dispatchsystem.R;
 import com.allebd.dispatchsystem.data.DataManager;
 import com.allebd.dispatchsystem.data.model.Hospital;
 import com.allebd.dispatchsystem.data.model.HospitalLocation;
+import com.allebd.dispatchsystem.data.model.RequestObject;
 import com.allebd.dispatchsystem.location.LocationHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,8 +22,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -33,6 +37,8 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
     @Inject
     public DataManager.Operations dataManager;
     private GoogleMap map;
+    private String userId;
+    private LatLng myLocation;
 
 
     @Override
@@ -43,6 +49,9 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        userId = auth.getCurrentUser().getUid();
+
     }
 
     @Override
@@ -85,12 +94,14 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
 
     @Override
     public void onLastLocationGotten(LatLng latLng) {
+        myLocation = latLng;
         dataManager.queryForHospitalLocations(latLng);
 
     }
 
     @Override
     public void onLocationChanged(LatLng latLng) {
+        myLocation = latLng;
         dataManager.queryForHospitalLocations(latLng);
     }
 
@@ -146,12 +157,25 @@ showDialog(hospital);
         getHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendRequest(hospital.getToken(), hospital.getUid());
+                RequestObject requestObject = createRequestObject(hospital);
+                sendRequest(requestObject);
             }
         });
     }
 
-    private void sendRequest(String token, String uid) {
-        dataManager.sendRequestToHospital(token, uid);
+    private RequestObject createRequestObject(Hospital hospital) {
+        RequestObject request = new RequestObject();
+        request.initEmptyRequest();
+        request.setHospitalId(hospital.getUid());
+        request.setUserId(userId);
+        request.setLatitude(myLocation.latitude);
+        request.setLongitude(myLocation.longitude);
+        Date date = Calendar.getInstance().getTime();
+        request.setDate(date);
+        return request;
+    }
+
+    private void sendRequest(RequestObject requestObject) {
+        dataManager.sendRequestToHospital(requestObject);
     }
 }

@@ -2,6 +2,7 @@ package com.allebd.dispatchsystem.data;
 
 import com.allebd.dispatchsystem.data.model.Hospital;
 import com.allebd.dispatchsystem.data.model.HospitalLocation;
+import com.allebd.dispatchsystem.data.model.RequestObject;
 import com.allebd.dispatchsystem.data.model.User;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -11,6 +12,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 
 public class AppDataManager implements DataManager.Operations {
@@ -26,7 +29,7 @@ public class AppDataManager implements DataManager.Operations {
 
     @Override
     public void storeUserInfo(User user, String uid) {
-        reference.child("user").child(user.getUid()).setValue(user);
+        reference.child("user").child(uid).setValue(user);
     }
 
     @Override
@@ -41,6 +44,27 @@ public class AppDataManager implements DataManager.Operations {
                 user.setGender((String) dataSnapshot.child("gender").getValue());
                 user.setBloodGroup((String) dataSnapshot.child("bloodGroup").getValue());
                 userListener.onUserInfoLoaded(user);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void queryForRequests(String userId) {
+        reference.child("users").child("requests").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<RequestObject> requests = new ArrayList<RequestObject>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    RequestObject request = snapshot.getValue(RequestObject.class);
+                    requests.add(request);
+                }
+                Collections.reverse(requests);
+                userListener.onRequestsLoaded(requests);
             }
 
             @Override
@@ -106,7 +130,8 @@ public class AppDataManager implements DataManager.Operations {
     }
 
     @Override
-    public void sendRequestToHospital(RequestObject request, String hospitalId) {
-        reference.child("hospitals").child("requests").child(hospitalId).push().setValue(request);
+    public void sendRequestToHospital(RequestObject request) {
+        reference.child("hospitals").child("requests").child(request.getHospitalId()).push().setValue(request);
+        reference.child("users").child("requests").child(request.getUserId()).push().setValue(request);
     }
 }

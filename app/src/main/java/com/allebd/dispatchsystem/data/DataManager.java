@@ -2,6 +2,7 @@ package com.allebd.dispatchsystem.data;
 
 import com.allebd.dispatchsystem.data.model.Hospital;
 import com.allebd.dispatchsystem.data.model.HospitalLocation;
+import com.allebd.dispatchsystem.data.model.RequestObject;
 import com.allebd.dispatchsystem.data.model.User;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -15,6 +16,8 @@ public interface DataManager {
 
         void queryForUserInfo(String userId);
 
+        void queryForRequests(String userId);
+
         void queryForHospitalLocations(LatLng latLng);
 
         void queryForHospitalInfo(String hospitalId);
@@ -23,7 +26,7 @@ public interface DataManager {
 
         void setUserListener(UserListener listener);
 
-        void sendRequestToHospital(RequestObject request, String hospitalId);
+        void sendRequestToHospital(RequestObject request);
     }
 
     interface HospitalListener {
@@ -34,5 +37,7 @@ public interface DataManager {
 
     interface UserListener {
         void onUserInfoLoaded(User user);
+
+        void onRequestsLoaded(ArrayList<RequestObject> requestObject);
     }
 }

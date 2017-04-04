@@ -9,6 +9,7 @@ import java.util.Date;
  */
 
 public class RequestObject {
+    private String uid;
     private String userId;
     private String hospitalId;
     private String hospitalName;
@@ -32,6 +33,15 @@ public class RequestObject {
         this.longitude = 0;
         this.status = 0;
     }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public String getUserId() {
         return userId;
     }

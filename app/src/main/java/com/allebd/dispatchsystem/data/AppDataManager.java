@@ -131,7 +131,9 @@ public class AppDataManager implements DataManager.Operations {
 
     @Override
     public void sendRequestToHospital(RequestObject request) {
-        reference.child("hospitals").child("requests").child(request.getHospitalId()).push().setValue(request);
-        reference.child("users").child("requests").child(request.getUserId()).push().setValue(request);
+        String key = reference.child("hospitals").child("requests").child(request.getHospitalId()).push().getKey();
+        request.setUid(key);
+        reference.child("hospitals").child("requests").child(request.getUserId()).child(key).setValue(request);
+        reference.child("users").child("requests").child(request.getUserId()).child(key).setValue(request);
     }
 }

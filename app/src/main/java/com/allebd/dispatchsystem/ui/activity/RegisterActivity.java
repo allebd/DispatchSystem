@@ -110,7 +110,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return;
         showProgressDialog("Registering you!");
         btnRegister.setEnabled(false);
-        firebaseAuth.createUserWithEmailAndPassword(etRegUser, etRegPass).addOnCompleteListener(this, this);
+        firebaseAuth.createUserWithEmailAndPassword(etRegEmail, etRegPass).addOnCompleteListener(this, this);
     }
 
     private boolean validateDob(String dob) {

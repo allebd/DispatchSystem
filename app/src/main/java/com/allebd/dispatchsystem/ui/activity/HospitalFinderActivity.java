@@ -40,6 +40,7 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
     private GoogleMap map;
     private String userId;
     private LatLng myLocation;
+    boolean mapReady = false, locationGotten = false;
 
 
     @Override
@@ -54,16 +55,17 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
         mapFragment.getMapAsync(this);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         userId = auth.getCurrentUser().getUid();
+        dataManager.setHospitalListeners(this);
+        initLocationServices();
 
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        initLocationServices();
 
         map.setOnMarkerClickListener(this);
-
+        if (locationGotten)dataManager.queryForHospitalLocations(myLocation);
     }
 
     private void initLocationServices() {
@@ -98,8 +100,8 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
     @Override
     public void onLastLocationGotten(LatLng latLng) {
         myLocation = latLng;
-        dataManager.queryForHospitalLocations(latLng);
-
+        if (mapReady)dataManager.queryForHospitalLocations(latLng);
+ locationGotten = true;
     }
 
     @Override

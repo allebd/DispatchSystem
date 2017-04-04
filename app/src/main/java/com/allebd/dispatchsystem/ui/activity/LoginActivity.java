@@ -52,15 +52,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnLogin = (Button) findViewById(R.id.btn_Login);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        if (getIntent()!=null){
-            Intent intent = getIntent();
-            String email = intent.getStringExtra("input_user");
-            String password = intent.getStringExtra("input_password");
-            id = intent.getStringExtra("id");
-
-            usernameET.setText(email);
-            passwordET.setText(password);
-        }
 
         btnLogin.setOnClickListener(this);
         tvRegister.setOnClickListener(this);

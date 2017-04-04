@@ -204,28 +204,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         dismissProgressDialog();
         if (!task.isSuccessful()) {
 
-            Log.e("Dispatchapp", task.getException().toString());
+             task.getException().printStackTrace();
             Snackbar.make(findViewById(R.id.activity_sign_up), "Sign Up failed, try again", Snackbar.LENGTH_SHORT).show();
             btnRegister.setEnabled(true);
         } else {
 
-            signUserIn();
+            String uid = task.getResult().getUser().getUid();
+            dataManager.storeUserInfo(createUser(), uid);
+            switchActivity(MainActivity.class);
 
         }
     }
 
-    private void signUserIn() {
-        firebaseAuth.signInWithEmailAndPassword(etRegEmail, etRegPass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    String uid = task.getResult().getUser().getUid();
-                    dataManager.storeUserInfo(createUser(), uid);
-                    switchActivity(MainActivity.class);
-                }
-            }
-        });
-    }
+
 
     private User createUser() {
         User user = new User();

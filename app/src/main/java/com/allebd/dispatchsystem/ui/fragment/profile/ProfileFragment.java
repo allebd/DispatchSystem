@@ -24,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProfileFragment#newInstance} factory method to
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 public class ProfileFragment extends Fragment implements DataManager.UserListener, View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
 
+    @Inject
     public DataManager.Operations dataManager;
     private String userId;
     private FirebaseAuth auth;
@@ -80,6 +83,7 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
         getAmbulance.setOnClickListener(this);
         rv = (RecyclerView) view.findViewById(R.id.request_rv);
         initUI();
+        dataManager.setUserListener(this);
         dataManager.queryForUserInfo(userId);
         return view;
     }

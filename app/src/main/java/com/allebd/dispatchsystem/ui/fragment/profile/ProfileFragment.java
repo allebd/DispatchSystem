@@ -104,7 +104,7 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
     private void doRest(ArrayList<RequestObject> requests) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(linearLayoutManager);
-        
+
         if (requests != null) {
             if (requests.size() > 0) {
                 RequestListAdapter reminderListAdapter = new RequestListAdapter(requests);

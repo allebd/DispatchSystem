@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.allebd.dispatchsystem.DispatchApplication;
 import com.allebd.dispatchsystem.R;
 import com.allebd.dispatchsystem.data.DataManager;
 import com.allebd.dispatchsystem.data.model.RequestObject;
@@ -32,7 +33,6 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
     private static final String ARG_PARAM1 = "param1";
 
     public DataManager.Operations dataManager;
-    // TODO: Rename and change types of parameters
     private String userId;
     private FirebaseAuth auth;
     private ImageView profileImage;
@@ -59,6 +59,8 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((DispatchApplication) getContext()).getAppComponent().inject(this);
+
         if (getArguments() != null) {
             userId = getArguments().getString(ARG_PARAM1);
         }
@@ -102,6 +104,7 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
     private void doRest(ArrayList<RequestObject> requests) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(linearLayoutManager);
+        
         if (requests != null) {
             if (requests.size() > 0) {
                 RequestListAdapter reminderListAdapter = new RequestListAdapter(requests);

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.allebd.dispatchsystem.DispatchApplication;
 import com.allebd.dispatchsystem.R;
 import com.allebd.dispatchsystem.data.DataManager;
 import com.allebd.dispatchsystem.data.model.Hospital;
@@ -45,6 +46,8 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hospital_finder);
+        ((DispatchApplication) getApplication()).getAppComponent().inject(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);

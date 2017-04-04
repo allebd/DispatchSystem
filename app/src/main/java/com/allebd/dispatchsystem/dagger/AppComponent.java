@@ -1,6 +1,7 @@
 package com.allebd.dispatchsystem.dagger;
 
 import com.allebd.dispatchsystem.ui.activity.HospitalFinderActivity;
+import com.allebd.dispatchsystem.ui.fragment.profile.ProfileFragment;
 
 import javax.inject.Singleton;
 
@@ -15,4 +16,5 @@ import dagger.Module;
 @Component(modules = {AppModule.class})
 public interface AppComponent {
     void inject(HospitalFinderActivity target);
+    void inject(ProfileFragment target);
 }

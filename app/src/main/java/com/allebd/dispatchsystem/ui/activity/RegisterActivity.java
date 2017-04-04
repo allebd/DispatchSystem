@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -202,6 +203,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     public void onComplete(@NonNull Task<AuthResult> task) {
         dismissProgressDialog();
         if (!task.isSuccessful()) {
+
+            Log.e("Dispatchapp", task.getException().toString());
             Snackbar.make(findViewById(R.id.activity_sign_up), "Sign Up failed, try again", Snackbar.LENGTH_SHORT).show();
             btnRegister.setEnabled(true);
         } else {

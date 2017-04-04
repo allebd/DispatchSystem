@@ -59,7 +59,7 @@ public class ProfileFragment extends Fragment implements DataManager.UserListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((DispatchApplication) getContext()).getAppComponent().inject(this);
+        DispatchApplication.getInstance().getAppComponent().inject(this);
 
         if (getArguments() != null) {
             userId = getArguments().getString(ARG_PARAM1);

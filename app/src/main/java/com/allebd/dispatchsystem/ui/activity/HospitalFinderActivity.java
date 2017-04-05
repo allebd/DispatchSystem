@@ -134,7 +134,7 @@ showDialog(hospital);
     public boolean onMarkerClick(Marker marker) {
         String uid = (String) marker.getTag();
         dataManager.queryForHospitalInfo(uid);
-        return true;
+        return false;
     }
 
     private void showDialog(final Hospital hospital) {
@@ -166,6 +166,7 @@ showDialog(hospital);
                 sendRequest(requestObject);
             }
         });
+        dialog.show();
     }
 
     private RequestObject createRequestObject(Hospital hospital) {

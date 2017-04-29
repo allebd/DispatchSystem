@@ -1,6 +1,5 @@
 package com.allebd.dispatchsystem.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,14 +20,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-//import android.databinding.DataBindingUtil;
-//import com.allebd.dispatchsystem.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, OnCompleteListener<AuthResult> {
-    Context c;
     private EditText usernameET;
     private EditText passwordET;
-    private TextView tvRegister;
     private Button btnLogin;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
@@ -48,7 +43,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         usernameET = (EditText) findViewById(R.id.input_user);
         passwordET = (EditText) findViewById(R.id.input_password);
-        tvRegister = (TextView) findViewById(R.id.tvRegister);
+        TextView tvRegister = (TextView) findViewById(R.id.tvRegister);
         btnLogin = (Button) findViewById(R.id.btn_Login);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -126,7 +121,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void switchActivity(Class classFile) {
         Intent intent = new Intent(this, classFile);
-        if (id != null){
+        if (id != null) {
             intent.putExtra("id", id);
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

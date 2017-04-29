@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,6 +18,7 @@ import com.allebd.dispatchsystem.data.model.HospitalLocation;
 import com.allebd.dispatchsystem.data.model.RequestObject;
 import com.allebd.dispatchsystem.location.LocationHelper;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -37,11 +39,11 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
     public LocationHelper locationHelper;
     @Inject
     public DataManager.Operations dataManager;
+    boolean mapReady = false, locationGotten = false;
     private GoogleMap map;
     private String userId;
     private LatLng myLocation;
-    boolean mapReady = false, locationGotten = false;
-
+    private String TAG = HospitalFinderActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +67,11 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
         map = googleMap;
 
         map.setOnMarkerClickListener(this);
-        if (locationGotten)dataManager.queryForHospitalLocations(myLocation);
+        if (locationGotten) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15));
+
+            dataManager.queryForHospitalLocations(myLocation);
+        }
     }
 
     private void initLocationServices() {
@@ -89,29 +95,37 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d(TAG, "onConnectionSuspended: ");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.d(TAG, "onConnectionFailed: ");
     }
 
     @Override
     public void onLastLocationGotten(LatLng latLng) {
         myLocation = latLng;
-        if (mapReady)dataManager.queryForHospitalLocations(latLng);
- locationGotten = true;
+
+        Log.d(TAG, "onLastLocationGotten: last location gotten" + latLng.latitude + "  " + latLng.longitude);
+        if (mapReady) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            dataManager.queryForHospitalLocations(latLng);
+        }
+        locationGotten = true;
     }
 
     @Override
     public void onLocationChanged(LatLng latLng) {
         myLocation = latLng;
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        Log.d(TAG, "onLocationChanged: location changed" + latLng.latitude + "  " + latLng.longitude);
         dataManager.queryForHospitalLocations(latLng);
     }
 
     @Override
     public void onHospitalsLocationLoaded(ArrayList<HospitalLocation> hospitalLocations) {
+        Log.d(TAG, "onHospitalsLocationLoaded: hospitals loaded");
         for (HospitalLocation location : hospitalLocations) {
             addMarker(location);
         }
@@ -127,7 +141,7 @@ public class HospitalFinderActivity extends FragmentActivity implements OnMapRea
 
     @Override
     public void onHospitalInfoLoaded(Hospital hospital) {
-showDialog(hospital);
+        showDialog(hospital);
     }
 
     @Override
@@ -164,6 +178,7 @@ showDialog(hospital);
             public void onClick(View v) {
                 RequestObject requestObject = createRequestObject(hospital);
                 sendRequest(requestObject);
+                dialog.dismiss();
             }
         });
         dialog.show();
@@ -174,6 +189,7 @@ showDialog(hospital);
         request.initEmptyRequest();
         request.setHospitalId(hospital.getUid());
         request.setUserId(userId);
+        request.setHospitalName(hospital.getName());
         request.setLatitude(myLocation.latitude);
         request.setLongitude(myLocation.longitude);
         Date date = Calendar.getInstance().getTime();

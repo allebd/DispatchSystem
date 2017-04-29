@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void switchFragment(Fragment fragment) {
         fragmentManager.beginTransaction()
                 .replace(R.id.content_frame, fragment)
-                .addToBackStack(null)
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .commit();
     }

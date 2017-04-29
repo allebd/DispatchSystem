@@ -55,7 +55,7 @@ public class AppDataManager implements DataManager.Operations {
 
     @Override
     public void queryForRequests(String userId) {
-        reference.child("users").child("requests").addValueEventListener(new ValueEventListener() {
+        reference.child("users").child("requests").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<RequestObject> requests = new ArrayList<RequestObject>();
@@ -133,7 +133,7 @@ public class AppDataManager implements DataManager.Operations {
     public void sendRequestToHospital(RequestObject request) {
         String key = reference.child("hospitals").child("requests").child(request.getHospitalId()).push().getKey();
         request.setUid(key);
-        reference.child("hospitals").child("requests").child(request.getUserId()).child(key).setValue(request);
+        reference.child("hospitals").child("requests").child(request.getHospitalId()).child(key).setValue(request);
         reference.child("users").child("requests").child(request.getUserId()).child(key).setValue(request);
     }
 }

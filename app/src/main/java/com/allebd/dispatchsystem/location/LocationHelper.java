@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -19,13 +20,14 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public class LocationHelper implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private static final LatLngBounds BOUNDS_NIGERIA = new LatLngBounds(new LatLng(5.065341647205726, 2.9987719580531),
+            new LatLng(9.9, 5.9));
     private Context context;
     private GoogleApiClient googleApiClient;
     private LatLng latLng;
     private LocationHelperListener listener;
     private boolean requestingLocationUpdates;
-    private static final LatLngBounds BOUNDS_NIGERIA = new LatLngBounds(new LatLng(5.065341647205726, 2.9987719580531),
-            new LatLng(9.9, 5.9));
+    private String TAG = LocationHelper.class.getSimpleName();
 
     public LocationHelper(Context context) {
         this.context = context;
@@ -48,9 +50,13 @@ public class LocationHelper implements GoogleApiClient.ConnectionCallbacks, Goog
     }
 
     public void onStop() {
-        requestingLocationUpdates = false;
+        if (!requestingLocationUpdates) {
+            Log.d(TAG, "onStop: Google api not connected before stop");
+            return;
+        }
         LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         googleApiClient.disconnect();
+        requestingLocationUpdates = false;
     }
 
     public void onResume() {
@@ -78,8 +84,8 @@ public class LocationHelper implements GoogleApiClient.ConnectionCallbacks, Goog
         if (lastLocation != null) {
             LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
             listener.onLastLocationGotten(latLng);
-            startLocationUpdates();
         }
+        startLocationUpdates();
 
     }
 

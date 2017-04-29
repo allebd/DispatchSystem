@@ -40,7 +40,7 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
     public void onBindViewHolder(ViewHolder holder, final int position) {
         RequestObject request = getItem(position);
 
-        holder.hospitalName.setText(request.getHospitalId());
+        holder.hospitalName.setText(request.getHospitalName());
         holder.requestStatus.setText(request.getStatusText());
         holder.requestDate.setText(request.getDateString());
 
